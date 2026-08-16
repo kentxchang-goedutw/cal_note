@@ -233,3 +233,13 @@ function formatTime(date) {
   const m = String(date.getMinutes()).padStart(2, '0');
   return `${h}:${m}`;
 }
+
+/**
+ * 測試與強制觸發授權函式：
+ * 若在 Chromebook 或瀏覽器中出現「The script does not have permission」錯誤，
+ * 請在 GAS 編輯器上方選取此函式「testAuth」，點擊「執行」▶️，即可跳出 Google 授權視窗完成授權！
+ */
+function testAuth() {
+  const cal = CalendarApp.getDefaultCalendar();
+  Logger.log('成功連接 Google 日曆: ' + cal.getName());
+}
