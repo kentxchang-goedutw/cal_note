@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "網頁行事曆便利貼",
-  "version": "1.5.1",
+  "version": "1.5.3",
   "description": "在網頁上以便利貼方式呈現未來幾天的 Google 行事曆行程 (支援 GAS 後端、尺寸切換、左右整齊排列與底部收合)",
   "icons": {
     "16": "icons/icon16.png",

@@ -68,6 +68,7 @@
   async function startSetup() {
     createDOM();
     setupMessageListeners();
+    startHostGuardian();
 
     if (!isExtensionValid()) return;
 
@@ -132,6 +133,49 @@
     const appRoot = document.createElement('div');
     appRoot.id = 'gcal-app-root';
     shadowRoot.appendChild(appRoot);
+  }
+
+  /**
+   * 部分 SPA 網站 (例如 ChatGPT) 在切換頁面/重新渲染時會整段清空並重建 <body>，
+   * 這會連帶把 #gcal-sticky-host 一起移除，導致便利貼「幾秒後消失」且不會再自動出現。
+   * 這裡用 MutationObserver 監看 <body> 的直接子節點變化，一旦發現 host 節點被移除，
+   * 就 debounce 後重新建立 DOM 並還原畫面內容。
+   */
+  function startHostGuardian() {
+    const target = document.body || document.documentElement;
+    if (!target) return;
+
+    let recreateTimer = null;
+
+    const observer = new MutationObserver(() => {
+      if (hostEl && hostEl.isConnected) return;
+      if (recreateTimer) return;
+      recreateTimer = setTimeout(() => {
+        recreateTimer = null;
+        recreateHost();
+      }, 150);
+    });
+
+    observer.observe(target, { childList: true });
+  }
+
+  function recreateHost() {
+    if (!isExtensionValid()) return;
+
+    createDOM();
+
+    if (!isEnabled) {
+      hideHost();
+      return;
+    }
+
+    showHost();
+
+    if (calendarData.length > 0) {
+      renderAll();
+    } else {
+      renderSetupHint();
+    }
   }
 
   function setupMessageListeners() {
